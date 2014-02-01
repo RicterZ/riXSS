@@ -1,4 +1,3 @@
-__author__ = 'Ricter'
 from lib.settings import *
 from lib.models import *
 

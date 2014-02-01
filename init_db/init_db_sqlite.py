@@ -1,5 +1,3 @@
-__author__ = 'Ricter'
-
 import sqlite3
 from lib.settings import db_path
 
