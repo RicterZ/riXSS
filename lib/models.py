@@ -29,10 +29,12 @@ def add_user(username, password):
 def check_login(username, password):
     user_data = db.select(USERS, where='username="%s"' % clean_input(username))
     try:
-        encode = user_data[0].password
+        user_data = user_data[0]
+        encode = user_data.password
+        user_id = user_data.id
     except IndexError:
         return False, user_pass_not_match
     if not check_password(encode=encode, raw_password=password):
         return False, user_already_exist
     else:
-        return True, user_data.id
+        return True, user_id
