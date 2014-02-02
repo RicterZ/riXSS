@@ -16,3 +16,7 @@ def check_password(encode, raw_password):
         return False
     else:
         return hashlib.md5(raw_password + salt).hexdigest() == hash_password
+
+
+def clean_input(data):
+    return data.replace('"', '').replace("'", '')

@@ -8,7 +8,7 @@ db.execute("""
         id integer not null primary key autoincrement,
         username char(50) not null,
         password char(100) not null,
-        token char(50) not null
+        token char(50) default null
     )
 """)
 
@@ -21,7 +21,7 @@ db.execute("""
 """)
 
 db.execute("""
-    create table user_project (
+    create table users_projects (
         id integer not null primary key autoincrement,
         user_id integer not null,
         project_id integer not null
@@ -37,5 +37,4 @@ db.execute("""
     )
 """)
 
-#todo
-#add some data of xss-scripts and test account.
+#add some data of xss-scripts and test account. todo
