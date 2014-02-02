@@ -8,5 +8,6 @@ urls = (
     '/xss', 'XSSHandler',
     '/result/([\d]+)', 'XSSResultHandler',
     '/login', 'LoginHandler',
+    '/reg', 'RegHandler',
     '/logout', 'LogoutHandler',
 )
