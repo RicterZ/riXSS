@@ -1,4 +1,3 @@
-__author__ = 'Ricter'
 from lib.urls import *
 from lib.views import *
 

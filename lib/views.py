@@ -50,7 +50,7 @@ class RegHandler(BaseHandler):
             if not status:
                 return message
             else:
-                return web.seeother('/user/%s' % message)
+                return web.seeother('/login')
         else:
             return valid.error
 
@@ -60,7 +60,12 @@ class LoginHandler(BaseHandler):
         pass
 
     def POST(self):
-        pass
+        input_data = web.input(email='', password='')
+        status, message = check_login(input_data.email, input_data.password)
+        if not status:
+            return message
+        else:
+            return web.seeother('/user/%s' % message)
 
 
 class LogoutHandler(BaseHandler):

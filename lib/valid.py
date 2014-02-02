@@ -2,7 +2,7 @@
     Check input.data are valid or not
 """
 import re
-from lib.language.en import *
+from lib.language.en import email_invalid, password_not_same, password_invalid
 
 
 class ValidChecker(object):
