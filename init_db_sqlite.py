@@ -28,6 +28,16 @@ db.execute("""
     )
 """)
 
+
+db.execute("""
+    create table project_results (
+        id integer not null primary key autoincrement,
+        project_id integer not null,
+        cookies longtext default null
+    )
+""")
+
+
 db.execute("""
     create table xss_core (
         id integer not null primary key autoincrement,
