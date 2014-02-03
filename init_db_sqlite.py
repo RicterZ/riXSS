@@ -16,15 +16,8 @@ db.execute("""
     create table projects (
         id integer not null primary key autoincrement,
         name char(50) not null,
-        type integer not null
-    )
-""")
-
-db.execute("""
-    create table users_projects (
-        id integer not null primary key autoincrement,
-        user_id integer not null,
-        project_id integer not null
+        type integer not null,
+        owner integer not null
     )
 """)
 
