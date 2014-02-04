@@ -40,6 +40,11 @@ def check_login(username, password):
         return True, user_id
 
 
+def auth_check(user_id, token):
+    data = db.select(USERS, what='token', where='id=%d' % int(user_id))[0]
+    return data.token == token
+
+
 def get_token(user_id):
     token = make_token()
     db.update(USERS, where='id=%d' % int(user_id), token=token)
