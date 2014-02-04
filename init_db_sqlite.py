@@ -17,7 +17,8 @@ db.execute("""
         id integer not null primary key autoincrement,
         name char(50) not null,
         type integer not null,
-        owner integer not null
+        owner integer not null,
+        create_date char(50) not null
     )
 """)
 
@@ -26,7 +27,9 @@ db.execute("""
     create table project_results (
         id integer not null primary key autoincrement,
         project_id integer not null,
-        cookies longtext default null
+        cookies longtext default null,
+        create_data char(50) not null,
+        server_data longtext default null
     )
 """)
 
