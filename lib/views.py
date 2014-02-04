@@ -1,6 +1,7 @@
 from lib.settings import *
 from lib.models import *
 from lib.language.en import *
+from lib.authentication import authentication
 from lib.valid import RegValidChecker
 
 
@@ -17,7 +18,10 @@ class IndexHandler(BaseHandler):
 
 class UserHandler(BaseHandler):
     def GET(self, user_id):
-        pass
+        @authentication
+        def func():
+            return self.render(title=personal_center, template="user.html")
+        return func()
 
     def POST(self):
         pass

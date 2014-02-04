@@ -1,9 +1,75 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title></title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+{% block style %}
+<style>
+    .main-title {
+        padding-bottom: 20px;
+        margin-bottom: 30px;
+        border-bottom: 1px solid #CCC;
+    }
+
+    .background-white {
+        background: #FFF;
+    }
+</style>
+{% endblock %}
+
+
+{% block body %}
+<h1 class="main-title">Welcome to riXSS</h1>
+<div class="col-xs-6 col-sm-3 sidebar-offcanvas">
+    <ul class="list-group">
+        <h3 class="list-group-item-heading">Projects Manage</h3>
+        <a href="#" class="list-group-item active">Projects List</a>
+        <a href="#" class="list-group-item">Add a Project</a>
+    </ul>
+    <ul class="list-group">
+        <h3 class="list-group-item-heading">Module Manage</h3>
+        <a href="#" class="list-group-item">Common Module</a>
+        <a href="#" class="list-group-item">Personal Module</a>
+        <a href="#" class="list-group-item">Add a Module</a>
+    </ul>
+    <ul class="list-group">
+        <h3 class="list-group-item-heading">Personal Settings</h3>
+        <a href="#" class="list-group-item">Settings</a>
+        <a href="#" class="list-group-item">Change Password</a>
+        <a href="/logout" class="list-group-item">Logout</a>
+    </ul>
+</div>
+
+<div class="col-xs-12 col-sm-9 background-white">
+    <h3>{{ function_title }}</h3>
+    <h3>Projects List</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Domain</th>
+                <th>Settings</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>1</td>
+                <td>127.0.0.1</td>
+                <td>token=XXXXXXXXX; user_id=XXX</td>
+            </tr>
+            <tr>
+                <td>2</td>
+                <td>www.baidu.com</td>
+                <td>token=XXXXXXXXX; user_id=XXX</td>
+            </tr>
+            <tr>
+                <td>3</td>
+                <td>www.qq.com</td>
+                <td>token=XXXXXXXXX; user_id=XXX</td>
+            </tr>
+            <tr>
+                <td>4</td>
+                <td>127.0.0.1</td>
+                <td>token=XXXXXXXXX; user_id=XXX</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+{% endblock %}

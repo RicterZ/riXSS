@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
     <title>{{ title }} - XSS test platform</title>
     <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
     {% block css %}
@@ -8,6 +9,10 @@
     <style>
         body {
             background: #EEE;
+        }
+
+        .container {
+            margin-top: 30px;
         }
     </style>
     {% block style %}
