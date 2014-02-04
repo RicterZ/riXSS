@@ -1,6 +1,6 @@
 from lib.settings import db
 from lib.language.en import user_already_exist, user_pass_not_match
-from utils import make_password, check_password, clean_input
+from utils import make_password, check_password, clean_input, make_token
 
 #settings for table
 USERS = 'users'
@@ -38,3 +38,9 @@ def check_login(username, password):
         return False, user_already_exist
     else:
         return True, user_id
+
+
+def get_token(user_id):
+    token = make_token()
+    db.update(USERS, where='id=%d' % int(user_id), token=token)
+    return token

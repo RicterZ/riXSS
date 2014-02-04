@@ -6,8 +6,8 @@ from lib.valid import RegValidChecker
 
 class BaseHandler(object):
 
-    def render(self, template, **kwargs):
-        return env.get_template(template).render(**kwargs)
+    def render(self, title, template, **kwargs):
+        return env.get_template(template).render(title=title, **kwargs)
 
 
 class IndexHandler(BaseHandler):
@@ -40,7 +40,7 @@ class XSSResultHandler(BaseHandler):
 
 class RegHandler(BaseHandler):
     def GET(self):
-        pass
+        return self.render(title=register_, template="reg.html")
 
     def POST(self):
         input_data = web.input(email='', password='', en_password='')
@@ -48,23 +48,25 @@ class RegHandler(BaseHandler):
         if valid.is_valid:
             status, message = add_user(input_data.email, input_data.password)
             if not status:
-                return message
+                return self.render(title=register_, template="reg.html", message=message)
             else:
                 return web.seeother('/login')
         else:
-            return valid.error
+            return self.render(title=register_, template="reg.html", message=valid.error)
 
 
 class LoginHandler(BaseHandler):
     def GET(self):
-        pass
+        return self.render(title=sign_in, template="login.html")
 
     def POST(self):
         input_data = web.input(email='', password='')
         status, message = check_login(input_data.email, input_data.password)
         if not status:
-            return message
+            return self.render(title=sign_in, template="login.html", message=message)
         else:
+            web.setcookie("user_id", message)
+            web.setcookie("token", get_token(message))
             return web.seeother('/user/%s' % message)
 
 

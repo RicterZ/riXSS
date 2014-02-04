@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ title }} - XSS test platform</title>
+    <link href="/static/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    {% block css %}
+    {% endblock %}
+    <style>
+        body {
+            background: #EEE;
+        }
+    </style>
+    {% block style %}
+    {% endblock %}
+</head>
+<body>
+<div class="container">
+{% block body %}
+{% endblock %}
+</div>
+<script src="/static/jquery.js"></script>
+<script src="/static/bootstrap/js/bootstrap.min.js"></script>
+</body>
+</html>

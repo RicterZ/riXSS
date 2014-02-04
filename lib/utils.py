@@ -18,5 +18,9 @@ def check_password(encode, raw_password):
         return hashlib.md5(raw_password + salt).hexdigest() == hash_password
 
 
+def make_token():
+    return ''.join(random.sample(string.letters+string.digits, 20))
+
+
 def clean_input(data):
     return data.replace('"', '').replace("'", '')
