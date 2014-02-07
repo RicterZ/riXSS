@@ -27,9 +27,12 @@ db.execute("""
     create table project_results (
         id integer not null primary key autoincrement,
         project_id integer not null,
-        cookies longtext default null,
-        create_data char(50) not null,
-        server_data longtext default null
+        xss_location longtext default null,
+        xss_toplocation longtext default null,
+        xss_title longtext default null,
+        xss_opener longtext default null,
+        xss_cookies longtext default null,
+        xss_referrer longtext default null
     )
 """)
 

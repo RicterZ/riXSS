@@ -5,8 +5,8 @@ from utils import make_password, check_password, clean_input, make_token
 #settings for table
 USERS = 'users'
 PROJECTS = 'projects'
-USERS_PROJECTS = '%s_%s' % (USERS, PROJECTS)
 XSS_CORE = 'xss_core'
+PROJECT_RESULTS = 'project_results'
 
 
 def unique(table, field, value):
@@ -49,3 +49,8 @@ def get_token(user_id):
     token = make_token()
     db.update(USERS, where='id=%d' % int(user_id), token=token)
     return token
+
+
+def xss_get_cookies(**kwargs):
+    db.insert(PROJECT_RESULTS, **kwargs)
+    return

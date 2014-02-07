@@ -3,6 +3,13 @@ from lib.models import *
 from lib.language.en import *
 from lib.authentication import authentication
 from lib.valid import RegValidChecker
+from lib.xss_core import get_cookie
+
+
+TYPE_DICT = {
+    '0': get_cookie,
+    '1': None,
+}
 
 
 class BaseHandler(object):
@@ -34,7 +41,17 @@ class XSScriptHandler(BaseHandler):
 
 class XSSHandler(BaseHandler):
     def GET(self):
-        pass
+        web_input = web.input(
+            type='',
+            id='',
+            xss_location='',
+            xss_toplocation='',
+            xss_title='',
+            xss_opener='',
+            xss_cookie='',
+            xss_referrer='',
+        )
+        return TYPE_DICT[web_input.type](web_input)
 
 
 class XSSResultHandler(BaseHandler):
