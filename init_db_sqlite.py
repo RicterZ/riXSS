@@ -37,7 +37,8 @@ db.execute("""
         id integer not null primary key autoincrement,
         name char(50) not null,
         script longtext default null,
-        type integer not null default 0
+        type integer not null default 0,
+        fields longtext default null
     )
 """)
 
