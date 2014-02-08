@@ -1,6 +1,6 @@
 from lib.settings import db
 from lib.language.en import user_already_exist, user_pass_not_match
-from utils import make_password, check_password, clean_input, make_token
+from utils import make_password, check_password, clean_input, make_token, now
 
 #settings for table
 USERS = 'users'
@@ -41,7 +41,11 @@ def check_login(username, password):
 
 
 def auth_check(user_id, token):
-    data = db.select(USERS, what='token', where='id=%d' % int(user_id))[0]
+    data = db.select(USERS, what='token', where='id=%d' % int(user_id))
+    try:
+        data = data[0]
+    except IndexError:
+        return False
     return data.token == token
 
 
@@ -74,3 +78,30 @@ def get_xss_code(core_id):
         return
     else:
         return data.script
+
+
+def get_module_detail(type_id, field):
+    data = db.select(XSS_CORE, where="id=%d" % int(type_id))
+    try:
+        data = data[0]
+    except IndexError:
+        return None
+    else:
+        return data[field]
+
+
+def add_project(project_name, project_type, user):
+    data = db.insert(PROJECTS, name=project_name, type=project_type,
+                     type_name=get_module_detail(project_type, 'name'),
+                     owner=user, created_date=now())
+    return data
+
+
+def get_user_projects(user_id):
+    data = db.select(PROJECTS, where="owner=%d" % int(user_id), order="id desc")
+    return data
+
+
+def get_all_module():
+    data = db.select(XSS_CORE, where="owner=0")
+    return data

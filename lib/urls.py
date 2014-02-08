@@ -5,6 +5,8 @@ urls = (
     '/([\d]+)', 'XSScriptHandler',
     #I prefer `[\d\w]+` todo
     '/user/([\d]+)', 'UserHandler',
+    '/delete/module/([\d]+)', 'DelModuleHandler',
+    '/delete/project/([\d]+)', 'DelProjectHandler',
     '/xss', 'XSSHandler',
     '/result/([\d]+)', 'XSSResultHandler',
     '/login', 'LoginHandler',

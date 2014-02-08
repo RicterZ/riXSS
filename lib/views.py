@@ -21,11 +21,18 @@ class UserHandler(BaseHandler):
     def GET(self, user_id):
         @authentication
         def func():
-            return self.render(title=personal_center, template="user.html")
+            return self.render(title=personal_center, template="user.html",
+                               modules=get_all_module(), projects=get_user_projects(user_id))
         return func()
 
-    def POST(self):
-        pass
+    def POST(self, user_id):
+        @authentication
+        def func():
+            web_input = web.input(name='', type=1)
+            if web_input.name:
+                add_project(project_name=web_input.name, project_type=web_input.type, user=user_id)
+            return web.seeother('/user/%d' % int(user_id))
+        return func()
 
 
 class XSScriptHandler(BaseHandler):
@@ -38,7 +45,6 @@ class XSScriptHandler(BaseHandler):
             return ''
         xss_script = jj.Template(code)
         return xss_script.render(now_path="http://%s/xss" % web.ctx.env.get('HTTP_HOST'), id=project_id)
-
 
 
 class XSSHandler(BaseHandler):
@@ -107,3 +113,17 @@ class LogoutHandler(BaseHandler):
         pass
 
 
+class DelProjectHandler(BaseHandler):
+    def GET(self):
+        @authentication
+        def func():
+            pass
+        return func()
+
+
+class DelModuleHandler(BaseHandler):
+    def GET(self):
+        @authentication
+        def func():
+            pass
+        return func()
