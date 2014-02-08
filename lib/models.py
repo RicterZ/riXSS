@@ -105,3 +105,13 @@ def get_user_projects(user_id):
 def get_all_module():
     data = db.select(XSS_CORE, where="owner=0")
     return data
+
+
+def is_owner(user_id, obj_id, obj_type):
+    data = db.select(obj_type, where="id=%d" % int(obj_id))
+    try:
+        data = data[0]
+    except IndexError:
+        return False
+    else:
+        return int(data.owner) == int(user_id)

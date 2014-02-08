@@ -86,7 +86,7 @@
                 <td><a href="#">{{ project.type_name }}</a></td>
                 <td>{{ project.created_date }}</td>
                 <td><a href="/result/{{ project.id }}">View Result</a></td>
-                <td><a href="/user/delete/{{ project.id }}">Delete</a></td>
+                <td><a href="/delete/project/{{ project.id }}">Delete</a></td>
             </tr>
             {% endfor %}
         </tbody>

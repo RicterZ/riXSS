@@ -72,9 +72,11 @@ class XSSHandler(BaseHandler):
 
 
 class XSSResultHandler(BaseHandler):
-    def GET(self):
-        pass
-        #return TYPE_DICT
+    def GET(self, project_id):
+        @authentication
+        def func():
+            pass
+        return func()
 
 
 class RegHandler(BaseHandler):
@@ -115,7 +117,7 @@ class LogoutHandler(BaseHandler):
 
 
 class DelProjectHandler(BaseHandler):
-    def GET(self):
+    def GET(self, porject_id):
         @authentication
         def func():
             pass
@@ -123,7 +125,7 @@ class DelProjectHandler(BaseHandler):
 
 
 class DelModuleHandler(BaseHandler):
-    def GET(self):
+    def GET(self, module_id):
         @authentication
         def func():
             pass
