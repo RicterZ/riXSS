@@ -4,7 +4,7 @@ from lib.models import *
 from lib.language.en import *
 from lib.authentication import authentication
 from lib.valid import RegValidChecker
-from lib.xss_core import get_cookie
+from lib.utils import now
 
 
 class BaseHandler(object):
@@ -32,29 +32,34 @@ class XSScriptHandler(BaseHandler):
     def GET(self, project_id):
         core = get_project_detail(project_id)
         if not core:
-            return
+            return ''
         code = get_xss_code(core)
         if not code:
-            return
-
+            return ''
         xss_script = jj.Template(code)
-        xss_script.render()
+        return xss_script.render(now_path="http://%s/xss" % web.ctx.env.get('HTTP_HOST'), id=project_id)
+
 
 
 class XSSHandler(BaseHandler):
     def GET(self):
         web_input = web.input()
         try:
-            project_id = int(web_input.id)
-            del web_input['id']
+            project_id = int(web_input.pop('id'))
         except ValueError:
             return ''
         except KeyError:
             return ''
-        raw_data = json.dumps(json.dumps(web_input))
+        raw_data = json.dumps(web_input)
+        server_data = json.dumps({
+            'User-Agent': web.ctx.env.get('HTTP_USER_AGENT'),
+            'Request-IP': web.ctx.env.get('REMOTE_ADDR')
+        })
         save_raw_data(
             project_id=project_id,
             raw_data=raw_data,
+            server_data=server_data,
+            got_time=now()
         )
         return ''
 

@@ -1,6 +1,7 @@
 import hashlib
 import random
 import string
+import datetime
 
 
 def make_password(raw_password):
@@ -24,3 +25,7 @@ def make_token():
 
 def clean_input(data):
     return data.replace('"', '').replace("'", '')
+
+
+def now():
+    return str(datetime.datetime.now()).split('.')[0]

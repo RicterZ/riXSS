@@ -57,7 +57,7 @@ def save_raw_data(**kwargs):
 
 
 def get_project_detail(project_id):
-    data = db.select(PROJECTS, where="id=%d" % project_id)
+    data = db.select(PROJECTS, where="id=%d" % int(project_id))
     try:
         data = data[0]
     except IndexError:
@@ -67,7 +67,7 @@ def get_project_detail(project_id):
 
 
 def get_xss_code(core_id):
-    data = db.select(PROJECTS, whrer="id=%d" % core_id)
+    data = db.select(XSS_CORE, where="id=%d" % int(core_id))
     try:
         data = data[0]
     except IndexError:
