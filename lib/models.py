@@ -51,6 +51,26 @@ def get_token(user_id):
     return token
 
 
-def xss_get_cookies(**kwargs):
+def save_raw_data(**kwargs):
     db.insert(PROJECT_RESULTS, **kwargs)
     return
+
+
+def get_project_detail(project_id):
+    data = db.select(PROJECTS, where="id=%d" % project_id)
+    try:
+        data = data[0]
+    except IndexError:
+        return
+    else:
+        return data.type
+
+
+def get_xss_code(core_id):
+    data = db.select(PROJECTS, whrer="id=%d" % core_id)
+    try:
+        data = data[0]
+    except IndexError:
+        return
+    else:
+        return data.script

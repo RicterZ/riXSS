@@ -27,12 +27,7 @@ db.execute("""
     create table project_results (
         id integer not null primary key autoincrement,
         project_id integer not null,
-        xss_location longtext default null,
-        xss_toplocation longtext default null,
-        xss_title longtext default null,
-        xss_opener longtext default null,
-        xss_cookies longtext default null,
-        xss_referrer longtext default null
+        raw_data longtext default null
     )
 """)
 
@@ -41,7 +36,7 @@ db.execute("""
     create table xss_core (
         id integer not null primary key autoincrement,
         name char(50) not null,
-        script longtext,
+        script longtext default null,
         type integer not null default 0
     )
 """)
