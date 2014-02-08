@@ -80,8 +80,8 @@ def get_xss_code(core_id):
         return data.script
 
 
-def get_module_detail(type_id, field):
-    data = db.select(XSS_CORE, where="id=%d" % int(type_id))
+def get_detail(table, type_id, field):
+    data = db.select(table, where="id=%d" % int(type_id))
     try:
         data = data[0]
     except IndexError:
@@ -92,7 +92,7 @@ def get_module_detail(type_id, field):
 
 def add_project(project_name, project_type, user):
     data = db.insert(PROJECTS, name=project_name, type=project_type,
-                     type_name=get_module_detail(project_type, 'name'),
+                     type_name=get_detail(XSS_CORE, project_type, 'name'),
                      owner=user, created_date=now())
     return data
 

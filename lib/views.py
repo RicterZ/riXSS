@@ -22,7 +22,8 @@ class UserHandler(BaseHandler):
         @authentication
         def func():
             return self.render(title=personal_center, template="user.html",
-                               modules=get_all_module(), projects=get_user_projects(user_id))
+                               modules=get_all_module(), projects=get_user_projects(user_id),
+                               EMAIL=get_detail(USERS, user_id, 'username'))
         return func()
 
     def POST(self, user_id):
