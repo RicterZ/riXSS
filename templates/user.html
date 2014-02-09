@@ -24,9 +24,9 @@
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title">Add a Project</h4>
       </div>
-      <form method="POST" action="#">
+      <form method="POST" action="/users">
       <div class="modal-body">
-        <label>Project Name:</label><input name="name" class="form-control" type="text" placeholder="Project Name" />
+        <label>Project Name:</label><input name="name" class="form-control" type="text" placeholder="Project Name" required />
         <label>Project Type:</label>
         <select class="form-control" name="type">
             {% for module in modules %}
@@ -43,18 +43,43 @@
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
 
-<h1 class="main-title">{{ EMAIL }}</h1>
+
+<!-- Modal -->
+<div class="modal fade" id="addModule" tabindex="-1" role="dialog" aria-labelledby="addModule" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Add a Module</h4>
+      </div>
+      <form method="POST" action="/modules">
+      <div class="modal-body">
+        <label>Module Name:</label><input name="name" class="form-control" type="text" placeholder="Module Name" required />
+        <label>Module Script:</label>
+        <textarea name="script" raws="10" class="form-control" placeholder="Cross-site scripting exploit" required></textarea>
+        <label>Custom Fields</label><input name="fields" class="form-control" type="text" placeholder="Raw Data Format Fields" />
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary">Save</button>
+      </div>
+      </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<h1 class="main-title">Welcome to riXSS, {{ EMAIL }}</h1>
 <div class="col-xs-6 col-sm-3 sidebar-offcanvas">
     <ul class="list-group">
         <h3 class="list-group-item-heading">Projects Manage</h3>
-        <a href="#" class="list-group-item active">Projects List</a>
+        <a href="/users" class="list-group-item {% if TYPE == 0 %}active{% endif %}">Projects List</a>
         <a href="#" class="list-group-item" data-toggle="modal" data-target="#addProject">Add a Project</a>
     </ul>
     <ul class="list-group">
         <h3 class="list-group-item-heading">Module Manage</h3>
-        <a href="#" class="list-group-item">Common Module</a>
-        <a href="#" class="list-group-item">Personal Module</a>
-        <a href="#" class="list-group-item">Add a Module</a>
+        <a href="/modules" class="list-group-item {% if TYPE == 1 %}active{% endif %}">Modules List</a>
+        <a href="#" class="list-group-item" data-toggle="modal" data-target="#addModule">Add a Module</a>
     </ul>
     <ul class="list-group">
         <h3 class="list-group-item-heading">Personal Settings</h3>
@@ -65,7 +90,7 @@
 </div>
 
 <div class="col-xs-12 col-sm-9 background-white">
-    <h3>{{ function_title }}</h3>
+    {% if TYPE == 0 %}
     <h3>Projects List</h3>
     <table class="table table-striped">
         <thead>
@@ -85,11 +110,37 @@
                 <td><a href="/{{ project.id }}">{{ project.name }}</a></td>
                 <td><a href="#">{{ project.type_name }}</a></td>
                 <td>{{ project.created_date }}</td>
-                <td><a href="/result/{{ project.id }}">View Result</a></td>
-                <td><a href="/delete/project/{{ project.id }}">Delete</a></td>
+                <td><a href="/results/{{ project.id }}">View Result</a></td>
+                <td><a href="/projects/{{ project.id }}/delete">Delete</a></td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    {% endif %}
+    {% if TYPE == 1 %}
+    <h3>Modules List</h3>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>#</th>
+                <th>Module Name</th>
+                <th>Module Type</th>
+                <th>Edit</th>
+                <th>Delete</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for module in modules %}
+            <tr>
+                <td>{{ module.id }}</td>
+                <td>{{ module.name }}</td>
+                <td>{% if module.owner %}Private{% else %}Public{% endif %}</td>
+                <td><a href="">Edit</a></td>
+                <td><a href="/modules/{{ module.id }}/delete">Delete</a></td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    {% endif %}
 </div>
 {% endblock %}

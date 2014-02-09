@@ -3,7 +3,7 @@ from lib.settings import *
 from lib.models import *
 from lib.language.en import *
 from lib.authentication import authentication
-from lib.valid import RegValidChecker
+from lib.valid import RegValidChecker, AddModuleValidChecker
 from lib.utils import now
 
 
@@ -24,8 +24,9 @@ class UserHandler(BaseHandler):
             user_id = web.cookies().get('user_id')
             if not user_id:
                 return web.seeother('/login')
-            return self.render(title=personal_center, template="user.html",
-                               modules=get_all_module(), projects=get_user_projects(user_id),
+            return self.render(TYPE=0, title=personal_center, template="user.html",
+                               modules=get_all_module(user_id=user_id),
+                               projects=get_user_projects(user_id),
                                EMAIL=get_detail(USERS, user_id, 'username'))
         return func()
 
@@ -36,7 +37,7 @@ class UserHandler(BaseHandler):
             web_input = web.input(name='', type=1)
             if web_input.name and user_id:
                 add_project(project_name=web_input.name, project_type=web_input.type, user=user_id)
-            return web.seeother('/user')
+            return web.seeother('/users')
         return func()
 
 
@@ -112,7 +113,7 @@ class LoginHandler(BaseHandler):
         else:
             web.setcookie("user_id", message)
             web.setcookie("token", get_token(message))
-            return web.seeother('/user')
+            return web.seeother('/users')
 
 
 class LogoutHandler(BaseHandler):
@@ -128,7 +129,7 @@ class DelProjectHandler(BaseHandler):
             if not user_id or not is_owner(user_id=user_id, obj_id=project_id, obj_type=PROJECTS):
                 return web.seeother('/login')
             del_project(project_id)
-            return web.seeother('/user')
+            return web.seeother('/users')
         return func()
 
 
@@ -137,7 +138,33 @@ class DelModuleHandler(BaseHandler):
         @authentication
         def func():
             user_id = web.cookies().get('user_id')
-            if not user_id or not is_owner(user_id=user_id, obj_id=module_id, obj_type=XSS_CORE):
-                return web.seeother('/login')
-            pass
+            if not user_id or not is_owner(user_id=user_id, obj_id=module_id,
+                                           obj_type=XSS_CORE):
+                return web.seeother('/modules')
+            del_module(module_id)
+            return web.seeother('/modules')
+        return func()
+
+
+class ModuleHandler(BaseHandler):
+    def GET(self):
+        @authentication
+        def func():
+            user_id = web.cookies().get('user_id')
+            return self.render(TYPE=1, EMAIL=get_detail(USERS, user_id, 'username'),
+                               title=personal_center, template="user.html",
+                               modules=get_all_module(user_id=user_id))
+        return func()
+
+    def POST(self):
+        @authentication
+        def func():
+            user_id = web.cookies().get('user_id')
+            web_input = web.input(name='', script='', fields='')
+            valid = AddModuleValidChecker(web_input)
+            if not user_id or not valid.is_valid:
+                return web.seeother('/modules')
+            add_module(name=web_input.name, script=web_input.script,
+                       fields=web_input.fields, owner=user_id)
+            return web.seeother('/modules')
         return func()

@@ -103,14 +103,24 @@ def get_user_projects(user_id):
     return data
 
 
-def get_all_module():
-    data = db.select(XSS_CORE, where="owner=0")
-    return data
+def get_all_module(user_id=0):
+    data = db.select(XSS_CORE, where="owner=0 or owner=%d" % int(user_id))
+    return [item for item in data]
 
 
 def del_project(project_id):
     db.delete(PROJECTS, where="id=%d" % int(project_id))
     db.delete(PROJECT_RESULTS, where="project_id=%d" % int(project_id))
+
+
+def del_module(module_id):
+    db.delete(XSS_CORE, where="id=%d" % int(module_id))
+    for project in db.select(PROJECTS, where="type=%d" % int(module_id)):
+        del_project(project.id)
+
+
+def add_module(name, script, fields, owner):
+    db.insert(XSS_CORE, name=name, script=script, fields=fields, owner=owner)
 
 
 def is_owner(user_id, obj_id, obj_type):
