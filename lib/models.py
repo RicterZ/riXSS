@@ -46,6 +46,7 @@ def auth_check(user_id, token):
         data = data[0]
     except IndexError:
         return False
+    print token == data.token
     return data.token == token
 
 
@@ -105,6 +106,11 @@ def get_user_projects(user_id):
 def get_all_module():
     data = db.select(XSS_CORE, where="owner=0")
     return data
+
+
+def del_project(project_id):
+    db.delete(PROJECTS, where="id=%d" % int(project_id))
+    db.delete(PROJECT_RESULTS, where="project_id=%d" % int(project_id))
 
 
 def is_owner(user_id, obj_id, obj_type):

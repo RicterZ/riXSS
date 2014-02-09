@@ -18,21 +18,25 @@ class IndexHandler(BaseHandler):
 
 
 class UserHandler(BaseHandler):
-    def GET(self, user_id):
+    def GET(self):
         @authentication
         def func():
+            user_id = web.cookies().get('user_id')
+            if not user_id:
+                return web.seeother('/login')
             return self.render(title=personal_center, template="user.html",
                                modules=get_all_module(), projects=get_user_projects(user_id),
                                EMAIL=get_detail(USERS, user_id, 'username'))
         return func()
 
-    def POST(self, user_id):
+    def POST(self):
         @authentication
         def func():
+            user_id = web.cookies().get('user_id')
             web_input = web.input(name='', type=1)
-            if web_input.name:
+            if web_input.name and user_id:
                 add_project(project_name=web_input.name, project_type=web_input.type, user=user_id)
-            return web.seeother('/user/%d' % int(user_id))
+            return web.seeother('/user')
         return func()
 
 
@@ -108,7 +112,7 @@ class LoginHandler(BaseHandler):
         else:
             web.setcookie("user_id", message)
             web.setcookie("token", get_token(message))
-            return web.seeother('/user/%s' % message)
+            return web.seeother('/user')
 
 
 class LogoutHandler(BaseHandler):
@@ -117,10 +121,14 @@ class LogoutHandler(BaseHandler):
 
 
 class DelProjectHandler(BaseHandler):
-    def GET(self, porject_id):
+    def GET(self, project_id):
         @authentication
         def func():
-            pass
+            user_id = web.cookies().get('user_id')
+            if not user_id or not is_owner(user_id=user_id, obj_id=project_id, obj_type=PROJECTS):
+                return web.seeother('/login')
+            del_project(project_id)
+            return web.seeother('/user')
         return func()
 
 
@@ -128,5 +136,8 @@ class DelModuleHandler(BaseHandler):
     def GET(self, module_id):
         @authentication
         def func():
+            user_id = web.cookies().get('user_id')
+            if not user_id or not is_owner(user_id=user_id, obj_id=module_id, obj_type=XSS_CORE):
+                return web.seeother('/login')
             pass
         return func()

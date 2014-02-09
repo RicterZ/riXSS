@@ -10,10 +10,12 @@ def authentication(func):
             user_id = cookies.user_id
             token = cookies.token
             if not user_id or not token:
-                return False
-            return auth_check(user_id, token)
+                return web.seeother('/login')
+            if not auth_check(user_id, token):
+                return web.seeother('/login')
+            return True
         except AttributeError:
-            return False
+            return web.seeother('/login')
 
     def decorator(_func=func):
         if has_permission():
