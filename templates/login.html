@@ -25,7 +25,7 @@
             <button type="submit" class="btn btn-primary btn-lg">&nbsp;&nbsp;Sign in&nbsp;&nbsp;</button>
         </div>
         {% if message %}
-        <div class="alert alert-warning">{{ message }}</div>
+        <div class="alert alert-warning">{{ message|safe }}</div>
         {% endif %}
     </form>
 {% endblock %}
