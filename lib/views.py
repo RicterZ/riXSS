@@ -4,7 +4,7 @@ from lib.models import *
 from lib.language.en import *
 from lib.authentication import authentication
 from lib.valid import RegValidChecker, AddModuleValidChecker
-from lib.utils import now
+from lib.utils import now, format_xss_result
 
 
 class BaseHandler(object):
@@ -80,7 +80,12 @@ class XSSResultHandler(BaseHandler):
     def GET(self, project_id):
         @authentication
         def func():
-            pass
+            user_id = web.cookies().get('user_id')
+            if not user_id or not is_owner(user_id=user_id, obj_id=project_id, obj_type=PROJECTS):
+                return web.seeother('/user')
+            results = format_xss_result(get_xss_result(project_id=project_id))
+            return self.render(title="Project %d Result" % int(project_id), project_id=project_id,
+                               template="detail.html", results=results)
         return func()
 
 
@@ -171,11 +176,10 @@ class ModuleHandler(BaseHandler):
         @authentication
         def func():
             user_id = web.cookies().get('user_id')
-            web_input = web.input(name='', script='', fields='')
+            web_input = web.input(name='', script='')
             valid = AddModuleValidChecker(web_input)
             if not user_id or not valid.is_valid:
                 return web.seeother('/modules')
-            add_module(name=web_input.name, script=web_input.script,
-                       fields=web_input.fields, owner=user_id)
+            add_module(name=web_input.name, script=web_input.script, owner=user_id)
             return web.seeother('/modules')
         return func()

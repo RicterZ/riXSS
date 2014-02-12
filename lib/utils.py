@@ -2,6 +2,8 @@ import hashlib
 import random
 import string
 import datetime
+import json
+from web import Storage
 
 
 def make_password(raw_password):
@@ -29,3 +31,12 @@ def clean_input(data):
 
 def now():
     return str(datetime.datetime.now()).split('.')[0]
+
+
+def format_xss_result(data):
+    return [{
+        'id': i.id,
+        'got_time': i.got_time,
+        'server_data': json.loads(i.server_data),
+        'raw_data': json.loads(i.raw_data)
+    } for i in data]
