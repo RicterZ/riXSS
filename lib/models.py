@@ -123,8 +123,8 @@ def del_module(module_id):
         del_project(project.id)
 
 
-def add_module(name, script, fields, owner):
-    db.insert(XSS_CORE, name=name, script=script, fields=fields, owner=owner)
+def add_module(name, script, owner):
+    db.insert(XSS_CORE, name=name, script=script, owner=owner)
 
 
 def is_owner(user_id, obj_id, obj_type):
@@ -135,3 +135,8 @@ def is_owner(user_id, obj_id, obj_type):
         return False
     else:
         return int(data.owner) == int(user_id)
+
+
+def get_xss_result(project_id):
+    data = db.select(PROJECT_RESULTS, where="project_id=%d" % int(project_id))
+    return data

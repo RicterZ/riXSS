@@ -57,14 +57,12 @@ db.execute("""
         id integer not null primary key autoincrement,
         name char(50) not null,
         script longtext default null,
-        owner integer not null default 0,
-        fields longtext default null
+        owner integer not null default 0
     )
 """)
 
 
-db.execute('insert into xss_core(name, script, fields) values (?, ?, ?)', ('Get Cookies', get_cookie,
-           'location,toplocation,cookie,opener,referrer,title'))
+db.execute('insert into xss_core(name, script) values (?, ?)', ('Get Cookies', get_cookie))
 
 db.execute('insert into projects(name, type, owner, created_date, type_name) values (?, ?, ?, ?, ?)',
            ('test', 1, 1, now(), 'Get Cookies'))
