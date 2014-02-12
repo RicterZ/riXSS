@@ -3,10 +3,13 @@
 urls = (
     '/', 'IndexHandler',
     '/([\d]+)', 'XSScriptHandler',
-    #I prefer `[\d\w]+` todo
-    '/user/([\d]+)', 'UserHandler',
+    '/users', 'UserHandler',
+    '/modules/([\d]+)/delete', 'DelModuleHandler',
+    '/projects/([\d]+)/delete', 'ProjectHandler',
+    '/projects/([\d]+)/edit', 'ProjectHandler',
     '/xss', 'XSSHandler',
-    '/result/([\d]+)', 'XSSResultHandler',
+    '/results/([\d]+)', 'XSSResultHandler',
+    '/modules', 'ModuleHandler',
     '/login', 'LoginHandler',
     '/reg', 'RegHandler',
     '/logout', 'LogoutHandler',

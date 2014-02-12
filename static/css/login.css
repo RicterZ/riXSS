@@ -1,0 +1,22 @@
+    .login-form {
+        padding: 40px 30px 50px;
+        margin: 0 auto;
+        text-align: center;
+        width: 500px;
+        background: #FFF;
+        border: #DDD solid 1px;
+        border-radius: 5px;
+    }
+
+    .login-form h2 {
+        margin-bottom: 40px;
+    }
+
+    .form-group button {
+        width: 94%;
+        margin: 20px auto 0;
+    }
+
+    .form-group {
+        margin: 10px 0;
+    }

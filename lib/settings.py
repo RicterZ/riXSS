@@ -24,7 +24,7 @@ TEMPLATES_PATH = 'templates'
 
 
 """ Some code """
-env = jj.Environment(loader=jj.FileSystemLoader(TEMPLATES_PATH))
+env = jj.Environment(loader=jj.FileSystemLoader(TEMPLATES_PATH), autoescape=True)
 if db_type == 'sqlite':
     db = web.database(dbn=db_type, db=db_path)
 elif db_type == 'mysql':
