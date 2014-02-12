@@ -45,6 +45,32 @@
 
 
 <!-- Modal -->
+<div class="modal fade" id="editProject" tabindex="-1" role="dialog" aria-labelledby="editProject" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Edit Project</h4>
+      </div>
+      <div class="modal-body">
+        <label>Project Name:</label><input name="name" id="edit-project-name" class="form-control" type="text" placeholder="Project Name" required />
+        <label>Project Type:</label>
+        <select class="form-control" id="edit-project-type" name="type">
+            {% for module in modules %}
+                <option value="{{ module.id }}">{{ module.name }}</option>
+            {% endfor %}
+        </select>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button id="edit-project-submit" class="btn btn-primary">Save</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<!-- Modal -->
 <div class="modal fade" id="addModule" tabindex="-1" role="dialog" aria-labelledby="addModule" aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
@@ -100,6 +126,7 @@
                 <th>Project Type</th>
                 <th>Created Time</th>
                 <th>Results</th>
+                <th>Edit</th>
                 <th>Delete</th>
             </tr>
         </thead>
@@ -108,9 +135,10 @@
             <tr>
                 <td>{{ project.id }}</td>
                 <td><a href="/{{ project.id }}">{{ project.name }}</a></td>
-                <td><a href="#">{{ project.type_name }}</a></td>
+                <td><a href="##" data-type="{{ project.type }}">{{ project.type_name }}</a></td>
                 <td>{{ project.created_date }}</td>
                 <td><a href="/results/{{ project.id }}">View Result</a></td>
+                <td><a href="##" class="project-edit"  data-pro-name="{{ project.name }}" data-pro-id="{{ project.id }}" data-pro-type="{{ project.type }}">Edit</a></td>
                 <td><a href="/projects/{{ project.id }}/delete">Delete</a></td>
             </tr>
             {% endfor %}
@@ -143,4 +171,33 @@
     </table>
     {% endif %}
 </div>
+{% endblock %}
+
+{% block script %}
+<script>
+$(".project-edit").click(function(){
+    //Set the views of the modal.
+    $('#edit-project-name')[0].value = this.attributes['data-pro-name'].nodeValue;
+    $('#edit-project-type').val(this.attributes['data-pro-type'].nodeValue);
+    $('#edit-project-submit')[0].setAttribute("data-type", this.attributes['data-pro-id'].nodeValue);
+    $('#editProject').modal('show');
+})
+
+$("#edit-project-submit").click(function(){
+    var projectId = this.attributes['data-type'].nodeValue;
+    $.ajax({
+        type: 'PUT',
+        url: '/projects/'+projectId+'/edit',
+        dataType: 'json',
+        data: {name: $('#edit-project-name').val(), type: $('#edit-project-type').val()},
+        success: function() {
+            $('#editProject').modal('hide');
+            window.location.reload();
+        },
+        error: function(){
+            alert('Modify Failed!');
+        }
+    })
+})
+</script>
 {% endblock %}

@@ -46,7 +46,6 @@ def auth_check(user_id, token):
         data = data[0]
     except IndexError:
         return False
-    print token == data.token
     return data.token == token
 
 
@@ -111,6 +110,11 @@ def get_all_module(user_id=0):
 def del_project(project_id):
     db.delete(PROJECTS, where="id=%d" % int(project_id))
     db.delete(PROJECT_RESULTS, where="project_id=%d" % int(project_id))
+
+
+def modify_project(project_id, project_name, project_type):
+    db.update(PROJECTS, where="id=%d" % int(project_id), name=project_name, type=project_type,
+              type_name=get_detail(XSS_CORE, project_type, 'name'))
 
 
 def del_module(module_id):

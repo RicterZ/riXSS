@@ -121,7 +121,7 @@ class LogoutHandler(BaseHandler):
         pass
 
 
-class DelProjectHandler(BaseHandler):
+class ProjectHandler(BaseHandler):
     def GET(self, project_id):
         @authentication
         def func():
@@ -130,6 +130,17 @@ class DelProjectHandler(BaseHandler):
                 return web.seeother('/login')
             del_project(project_id)
             return web.seeother('/users')
+        return func()
+
+    def PUT(self, project_id):
+        @authentication
+        def func():
+            user_id = web.cookies().get('user_id')
+            web_input = web.input(name='', type='')
+            if not user_id or not is_owner(user_id=user_id, obj_id=project_id, obj_type=PROJECTS):
+                return web.seeother('/login')
+            modify_project(project_id, web_input.name, web_input.type)
+            return {}
         return func()
 
 
