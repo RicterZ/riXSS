@@ -123,7 +123,9 @@ class LoginHandler(BaseHandler):
 
 class LogoutHandler(BaseHandler):
     def GET(self):
-        pass
+        web.setcookie('user_id', '')
+        web.setcookie('token', '')
+        return web.seeother('/login')
 
 
 class ProjectHandler(BaseHandler):
