@@ -84,7 +84,7 @@ class XSSResultHandler(BaseHandler):
             if not user_id or not is_owner(user_id=user_id, obj_id=project_id, obj_type=PROJECTS):
                 return web.seeother('/user')
             results = format_xss_result(get_xss_result(project_id=project_id))
-            return self.render(title="Project %d Result" % int(project_id), project_id=project_id,
+            return self.render(title="Project %d" % int(project_id), project_id=project_id,
                                template="detail.html", results=results)
         return func()
 
