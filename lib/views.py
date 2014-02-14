@@ -28,18 +28,17 @@ class RedirectHandler(BaseHandler):
 
 class UserHandler(BaseHandler):
     def GET(self, user_id):
-        @authentication
+        @authentication(uid=user_id)
         def func():
             return self.render(TYPE=0, title=personal_center, template="user.html",
                                modules=get_all_module(user_id=user_id),
-                               projects=get_user_projects(user_id),
+                               projects=get_user_projects(user_id), user_id=user_id,
                                EMAIL=get_detail(USERS, user_id, 'username'))
         return func()
 
-    def POST(self):
-        @authentication
+    def POST(self, user_id):
+        @authentication(uid=user_id)
         def func():
-            user_id = web.cookies().get('user_id')
             web_input = web.input(name='', type=1)
             if web_input.name and user_id:
                 add_project(project_name=web_input.name, project_type=web_input.type, user=user_id)
@@ -84,7 +83,7 @@ class XSSHandler(BaseHandler):
 
 class XSSResultHandler(BaseHandler):
     def GET(self, project_id):
-        @authentication
+        @authentication()
         @has_obj_permission(obj=PROJECTS, obj_id=project_id)
         def func():
             results = format_xss_result(get_xss_result(project_id=project_id))
@@ -95,7 +94,7 @@ class XSSResultHandler(BaseHandler):
 
 class XSSResultCleanHandler(BaseHandler):
     def GET(self, project_id):
-        @authentication
+        @authentication()
         @has_obj_permission(obj=PROJECTS, obj_id=project_id, url="/user")
         def func():
             clean_xss_result(project_id)
@@ -105,7 +104,7 @@ class XSSResultCleanHandler(BaseHandler):
 
 class XSSResultDelHandler(BaseHandler):
     def GET(self, project_id, result_id):
-        @authentication
+        @authentication()
         @has_obj_permission(obj=PROJECTS, obj_id=project_id, url='/user')
         def func():
             del_a_result(result_id)
@@ -154,7 +153,7 @@ class LogoutHandler(BaseHandler):
 
 class ProjectHandler(BaseHandler):
     def GET(self, project_id):
-        @authentication
+        @authentication()
         @has_obj_permission(obj=PROJECTS, obj_id=project_id)
         def func():
             del_project(project_id)
@@ -162,7 +161,7 @@ class ProjectHandler(BaseHandler):
         return func()
 
     def PUT(self, project_id):
-        @authentication
+        @authentication()
         @has_obj_permission(obj=PROJECTS, obj_id=project_id)
         def func():
             web_input = web.input(name='', type='')
@@ -173,7 +172,7 @@ class ProjectHandler(BaseHandler):
 
 class DelModuleHandler(BaseHandler):
     def GET(self, module_id):
-        @authentication
+        @authentication()
         @has_obj_permission(obj=XSS_CORE, obj_id=module_id, url='/modules')
         def func():
             del_module(module_id)
@@ -183,7 +182,7 @@ class DelModuleHandler(BaseHandler):
 
 class ModuleHandler(BaseHandler):
     def GET(self):
-        @authentication
+        @authentication()
         def func():
             user_id = web.cookies().get('user_id')
             return self.render(TYPE=1, EMAIL=get_detail(USERS, user_id, 'username'),
@@ -192,7 +191,7 @@ class ModuleHandler(BaseHandler):
         return func()
 
     def POST(self):
-        @authentication
+        @authentication()
         def func():
             user_id = web.cookies().get('user_id')
             web_input = web.input(name='', script='')
