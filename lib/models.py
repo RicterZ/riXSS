@@ -35,7 +35,7 @@ def check_login(username, password):
     except IndexError:
         return False, user_pass_not_match
     if not check_password(encode=encode, raw_password=password):
-        return False, user_already_exist
+        return False, user_pass_not_match
     else:
         return True, user_id
 
