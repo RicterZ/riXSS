@@ -1,17 +1,7 @@
 {% extends "base.html" %}
 
-{% block style %}
-<style>
-    .main-title {
-        padding-bottom: 20px;
-        margin-bottom: 30px;
-        border-bottom: 1px solid #CCC;
-    }
-
-    .background-white {
-        background: #FFF;
-    }
-</style>
+{% block css %}
+<link href="/static/css/user.css" rel="stylesheet">
 {% endblock %}
 
 
@@ -82,14 +72,35 @@
       <div class="modal-body">
         <label>Module Name:</label><input name="name" class="form-control" type="text" placeholder="Module Name" required />
         <label>Module Script:</label>
-        <textarea name="script" raws="10" class="form-control" placeholder="Cross-site scripting exploit" required></textarea>
-        <label>Custom Fields</label><input name="fields" class="form-control" type="text" placeholder="Raw Data Format Fields" />
+        <textarea name="script" rows="10" class="form-control" placeholder="Cross-site scripting exploit" required></textarea>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
         <button type="submit" class="btn btn-primary">Save</button>
       </div>
       </form>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+
+<!-- Modal -->
+<div class="modal fade" id="editModule" tabindex="-1" role="dialog" aria-labelledby="editModule" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Edit a Module</h4>
+      </div>
+      <div class="modal-body">
+        <label>Module Name:</label><input id="edit-module-name" class="form-control" type="text" placeholder="Module Name" required />
+        <label>Module Script:</label>
+        <textarea id="edit-module-script" rows="10" class="form-control" placeholder="Cross-site scripting exploit" required></textarea>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+        <button type="submit" class="btn btn-primary" id="edit-module-save">Edit</button>
+      </div>
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
@@ -135,7 +146,7 @@
             <tr>
                 <td>{{ project.id }}</td>
                 <td><a href="/{{ project.id }}">{{ project.name }}</a></td>
-                <td><a href="##" data-type="{{ project.type }}">{{ project.type_name }}</a></td>
+                <td><a href="##" data-type="{{ project.type }}" class="edit-module">{{ project.type_name }}</a></td>
                 <td>{{ project.created_date }}</td>
                 <td><a href="/projects/{{ project.id }}/results">View Result</a></td>
                 <td><a href="##" class="project-edit"  data-pro-name="{{ project.name }}" data-pro-id="{{ project.id }}" data-pro-type="{{ project.type }}">Edit</a></td>
@@ -163,7 +174,7 @@
                 <td>{{ module.id }}</td>
                 <td>{{ module.name }}</td>
                 <td>{% if module.owner %}Private{% else %}Public{% endif %}</td>
-                <td><a href="">Edit</a></td>
+                <td><a href="##" data-type="{{ module.id }}" class="edit-module">Edit</a></td>
                 <td><a href="/modules/{{ module.id }}/delete">Delete</a></td>
             </tr>
             {% endfor %}
@@ -174,30 +185,5 @@
 {% endblock %}
 
 {% block script %}
-<script>
-$(".project-edit").click(function(){
-    //Set the views of the modal.
-    $('#edit-project-name')[0].value = this.attributes['data-pro-name'].nodeValue;
-    $('#edit-project-type').val(this.attributes['data-pro-type'].nodeValue);
-    $('#edit-project-submit')[0].setAttribute("data-type", this.attributes['data-pro-id'].nodeValue);
-    $('#editProject').modal('show');
-})
-
-$("#edit-project-submit").click(function(){
-    var projectId = this.attributes['data-type'].nodeValue;
-    $.ajax({
-        type: 'PUT',
-        url: '/projects/'+projectId+'/edit',
-        dataType: 'json',
-        data: {name: $('#edit-project-name').val(), type: $('#edit-project-type').val()},
-        success: function() {
-            $('#editProject').modal('hide');
-            window.location.reload();
-        },
-        error: function(){
-            alert('Modify Failed!');
-        }
-    })
-})
-</script>
+<script src="/static/js/user.js"></script>
 {% endblock %}

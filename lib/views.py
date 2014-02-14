@@ -5,6 +5,7 @@ from lib.language.en import *
 from lib.authentication import authentication, has_obj_permission
 from lib.valid import RegValidChecker, AddModuleValidChecker
 from lib.utils import now, format_xss_result
+from web.webapi import HTTPError
 
 
 class BaseHandler(object):
@@ -30,9 +31,17 @@ class UserHandler(BaseHandler):
     def GET(self, user_id):
         @authentication(uid=user_id)
         def func():
+            projects = get_user_projects(user_id)
+            projects = [{
+                "id": i.id,
+                "name": i.name,
+                "type": i.type,
+                "type_name": get_detail(XSS_CORE, i.type, 'name'),
+                "created_date": i.created_date
+            } for i in projects]
             return self.render(TYPE=0, title=personal_center, template="user.html",
                                modules=get_all_module(user_id=user_id),
-                               projects=get_user_projects(user_id), user_id=user_id,
+                               projects=projects, user_id=user_id,
                                EMAIL=get_detail(USERS, user_id, 'username'))
         return func()
 
@@ -180,7 +189,7 @@ class DelModuleHandler(BaseHandler):
         return func()
 
 
-class ModuleHandler(BaseHandler):
+class ModulesHandler(BaseHandler):
     def GET(self):
         @authentication()
         def func():
@@ -200,4 +209,30 @@ class ModuleHandler(BaseHandler):
                 return web.seeother('/modules')
             add_module(name=web_input.name, script=web_input.script, owner=user_id)
             return web.seeother('/modules')
+        return func()
+
+
+class ModuleHandler(BaseHandler):
+    def GET(self, module_id):
+        @authentication()
+        @has_obj_permission(XSS_CORE, obj_id=module_id, exception=True)
+        def func():
+            module = get_module_detail(module_id)
+            return json.dumps({
+                'name': module.name,
+                'script': module.script
+            })
+        return func()
+
+    def PUT(self, module_id):
+        @authentication()
+        @has_obj_permission(XSS_CORE, obj_id=module_id)
+        def func():
+            web_input = web.input(name='', script='')
+            valid = AddModuleValidChecker(web_input)
+            if not valid.is_valid:
+                raise HTTPError(403, data=json.dumps({'error': valid.error}),
+                                headers={'Content-type': 'application/json'})
+            modify_module(module_id, web_input.name, web_input.script)
+            return json.dumps({'message': 'successful'})
         return func()

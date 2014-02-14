@@ -1,6 +1,6 @@
 __author__ = 'Ricter'
 import web
-from lib.models import auth_check, is_owner
+from lib.models import auth_check, is_owner, get_detail, XSS_CORE
 
 
 def authentication(uid=None):
@@ -28,11 +28,15 @@ def authentication(uid=None):
     return decorator
 
 
-def has_obj_permission(obj, obj_id, url="/login"):
+def has_obj_permission(obj, obj_id, url="/login", exception=False):
     def has_permission(_obj=obj, _obj_id=obj_id):
         user_id = web.cookies().get('user_id')
         if not user_id:
             return False
+        if exception:
+            #Exception only for view public modules.
+            if int(get_detail(XSS_CORE, obj_id, 'owner')) == 0:
+                return True
         if not is_owner(user_id=user_id, obj_id=_obj_id, obj_type=_obj):
             return False
         return True

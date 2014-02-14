@@ -1,65 +1,7 @@
 {% extends "base.html" %}
 
 {% block style %}
-<style>
-    .main-title {
-        padding-bottom: 10px;
-        border-bottom: 1px solid #CCC;
-    }
-
-    .background-white {
-        background: #FFF;
-    }
-
-    tr.result > .center {
-        vertical-align: middle;
-        display: inline-block;
-    }
-
-    .time {
-        width: 150px;
-    }
-
-    .server-data {
-        width: 200px;
-    }
-
-    .cookies {
-        width: 610px;
-    }
-
-    .result > td, .result > th{
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-
-    .result-container {
-        width: 1140px
-    }
-
-    .view {
-        width: 55px;
-    }
-
-    .id {
-        width: 35px;
-    }
-
-    div > .line{
-        display: block;
-        border-bottom: 1px solid #CCC;
-    }
-
-    div >.line:nth-child(odd) {
-        background: #EEE;
-    }
-
-    .operate > a {
-        margin-right: 20px;
-    }
-
-</style>
+<link href="/static/css/detail.css" rel="stylesheet">
 {% endblock %}
 
 
@@ -88,7 +30,7 @@
 
 <h1 class="main-title">The Result of Project {{ project_id }}</h1>
 <div class="operate">
-    <a href="/projects/{{ project_id }}/results/clean">Clean All</a>
+    <a href="##" onclick="makeSure()">Clean All</a>
     <a href="/users">Personal Center</a>
 </div>
 <div class="result-container">
@@ -131,12 +73,5 @@
 {% endblock %}
 
 {% block script %}
-<script>
-$(".view").click(function (){
-    var parentObj = $(this).parent();
-    $(".result-server-data").html($(parentObj[0]).children(".server-data").html());
-    $(".result-cookie").html($(parentObj[0]).children(".cookies").html());
-    $("#projectResult").modal('show');
-})
-</script>
+<script src="/static/js/detail.js"></script>
 {% endblock %}

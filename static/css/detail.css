@@ -1,0 +1,56 @@
+    .main-title {
+        padding-bottom: 10px;
+        border-bottom: 1px solid #CCC;
+    }
+
+    .background-white {
+        background: #FFF;
+    }
+
+    tr.result > .center {
+        vertical-align: middle;
+        display: inline-block;
+    }
+
+    .time {
+        width: 150px;
+    }
+
+    .server-data {
+        width: 200px;
+    }
+
+    .cookies {
+        width: 590px;
+    }
+
+    .result > td, .result > th{
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+    }
+
+    .result-container {
+        width: 1140px
+    }
+
+    .view {
+        width: 55px;
+    }
+
+    .id {
+        width: 35px;
+    }
+
+    div > .line{
+        display: block;
+        border-bottom: 1px solid #CCC;
+    }
+
+    div >.line:nth-child(odd) {
+        background: #EEE;
+    }
+
+    .operate > a {
+        margin-right: 20px;
+    }
