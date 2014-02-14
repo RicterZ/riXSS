@@ -88,7 +88,7 @@
 
 <h1 class="main-title">The Result of Project {{ project_id }}</h1>
 <div class="operate">
-    <a href="##">Clean All</a>
+    <a href="/projects/{{ project_id }}/results/clean">Clean All</a>
     <a href="/users">Personal Center</a>
 </div>
 <div class="result-container">
@@ -121,7 +121,7 @@
                     {% endfor %}
                 </td>
                 <td class="center view"><a href="##">View</a></td>
-                <td class="center"><a href="/projects/{{ project_id }}/delete/{{ result.id  }}">Delete</a></td>
+                <td class="center"><a href="/projects/{{ project_id }}/results/{{ result.id  }}/delete">Delete</a></td>
             </tr>
             {% set i = i + 1 %}
             {% endfor %}

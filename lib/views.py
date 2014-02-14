@@ -2,7 +2,7 @@ import json
 from lib.settings import *
 from lib.models import *
 from lib.language.en import *
-from lib.authentication import authentication
+from lib.authentication import authentication, has_obj_permission
 from lib.valid import RegValidChecker, AddModuleValidChecker
 from lib.utils import now, format_xss_result
 
@@ -17,13 +17,19 @@ class IndexHandler(BaseHandler):
         return 'Hello world'
 
 
-class UserHandler(BaseHandler):
+class RedirectHandler(BaseHandler):
     def GET(self):
+        user_id = web.cookies().get('user_id')
+        if not user_id:
+            web.seeother('/login')
+        else:
+            web.seeother('/users/%d' % int(user_id))
+
+
+class UserHandler(BaseHandler):
+    def GET(self, user_id):
         @authentication
         def func():
-            user_id = web.cookies().get('user_id')
-            if not user_id:
-                return web.seeother('/login')
             return self.render(TYPE=0, title=personal_center, template="user.html",
                                modules=get_all_module(user_id=user_id),
                                projects=get_user_projects(user_id),
@@ -79,13 +85,31 @@ class XSSHandler(BaseHandler):
 class XSSResultHandler(BaseHandler):
     def GET(self, project_id):
         @authentication
+        @has_obj_permission(obj=PROJECTS, obj_id=project_id)
         def func():
-            user_id = web.cookies().get('user_id')
-            if not user_id or not is_owner(user_id=user_id, obj_id=project_id, obj_type=PROJECTS):
-                return web.seeother('/user')
             results = format_xss_result(get_xss_result(project_id=project_id))
             return self.render(title="Project %d" % int(project_id), project_id=project_id,
                                template="detail.html", results=results)
+        return func()
+
+
+class XSSResultCleanHandler(BaseHandler):
+    def GET(self, project_id):
+        @authentication
+        @has_obj_permission(obj=PROJECTS, obj_id=project_id, url="/user")
+        def func():
+            clean_xss_result(project_id)
+            return web.seeother('/projects/%d/results' % int(project_id))
+        return func()
+
+
+class XSSResultDelHandler(BaseHandler):
+    def GET(self, project_id, result_id):
+        @authentication
+        @has_obj_permission(obj=PROJECTS, obj_id=project_id, url='/user')
+        def func():
+            del_a_result(result_id)
+            return web.seeother('/projects/%d/results' % int(project_id))
         return func()
 
 
@@ -131,21 +155,17 @@ class LogoutHandler(BaseHandler):
 class ProjectHandler(BaseHandler):
     def GET(self, project_id):
         @authentication
+        @has_obj_permission(obj=PROJECTS, obj_id=project_id)
         def func():
-            user_id = web.cookies().get('user_id')
-            if not user_id or not is_owner(user_id=user_id, obj_id=project_id, obj_type=PROJECTS):
-                return web.seeother('/login')
             del_project(project_id)
             return web.seeother('/users')
         return func()
 
     def PUT(self, project_id):
         @authentication
+        @has_obj_permission(obj=PROJECTS, obj_id=project_id)
         def func():
-            user_id = web.cookies().get('user_id')
             web_input = web.input(name='', type='')
-            if not user_id or not is_owner(user_id=user_id, obj_id=project_id, obj_type=PROJECTS):
-                return web.seeother('/login')
             modify_project(project_id, web_input.name, web_input.type)
             return {}
         return func()
@@ -154,11 +174,8 @@ class ProjectHandler(BaseHandler):
 class DelModuleHandler(BaseHandler):
     def GET(self, module_id):
         @authentication
+        @has_obj_permission(obj=XSS_CORE, obj_id=module_id, url='/modules')
         def func():
-            user_id = web.cookies().get('user_id')
-            if not user_id or not is_owner(user_id=user_id, obj_id=module_id,
-                                           obj_type=XSS_CORE):
-                return web.seeother('/modules')
             del_module(module_id)
             return web.seeother('/modules')
         return func()

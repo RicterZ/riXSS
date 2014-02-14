@@ -140,3 +140,11 @@ def is_owner(user_id, obj_id, obj_type):
 def get_xss_result(project_id):
     data = db.select(PROJECT_RESULTS, where="project_id=%d" % int(project_id))
     return data
+
+
+def clean_xss_result(project_id):
+    db.delete(PROJECT_RESULTS, where="project_id=%d" % int(project_id))
+
+
+def del_a_result(result_id):
+    db.delete(PROJECT_RESULTS, where="id=%d" % int(result_id))
