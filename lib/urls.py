@@ -5,6 +5,8 @@ urls = (
     '/([\d]+)', 'XSScriptHandler',
     '/users', 'RedirectHandler',
     '/users/([\d]+)', 'UserHandler',
+    '/modules', 'ModulesHandler',
+    '/modules/([\d]+)', 'ModuleHandler',
     '/modules/([\d]+)/delete', 'DelModuleHandler',
     '/projects/([\d]+)/delete', 'ProjectHandler',
     '/projects/([\d]+)/edit', 'ProjectHandler',
@@ -12,8 +14,7 @@ urls = (
     '/projects/([\d]+)/results/clean', 'XSSResultCleanHandler',
     '/projects/([\d]+)/results/([\d]+)/delete', 'XSSResultDelHandler',
     '/xss', 'XSSHandler',
-    '/modules', 'ModuleHandler',
-    '/login', 'LoginHandler',
     '/reg', 'RegHandler',
+    '/login', 'LoginHandler',
     '/logout', 'LogoutHandler',
 )

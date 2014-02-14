@@ -28,3 +28,33 @@ $("#edit-project-submit").click(function(){
         }
     })
 })
+
+$(".edit-module").click(function() {
+    var module_id = this.attributes['data-type'].nodeValue;
+    $("#edit-module-save").attr('data-type', module_id);
+    $.ajax({
+        type: 'GET',
+        url: '/modules/' + module_id,
+        dataType: 'json',
+        success: function(data) {
+            $("#edit-module-name")[0].value = data.name;
+            $("#edit-module-script").val(data.script);
+            $("#editModule").modal('show');
+        }
+    })
+})
+
+
+$("#edit-module-save").click(function() {
+    var module_id = this.attributes['data-type'].nodeValue;
+    $.ajax({
+        type: 'PUT',
+        url: '/modules/' + module_id,
+        data: {name: $("#edit-module-name").val(), script: $("#edit-module-script").val()},
+        dataType: 'json',
+        success: function(data) {
+            $("#editModule").modal('hide');
+            window.location.reload();
+        }
+    })
+})

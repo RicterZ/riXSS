@@ -74,12 +74,4 @@
 
 {% block script %}
 <script src="/static/js/detail.js"></script>
-<script>
-    function makeSure() {
-        var confirm_clean = confirm("Are you SURE?");
-        if (confirm_clean) {
-            window.location = "/projects/{{ project_id }}/results/clean"
-        };
-    }
-</script>
 {% endblock %}
