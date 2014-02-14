@@ -35,7 +35,7 @@ def check_login(username, password):
     except IndexError:
         return False, user_pass_not_match
     if not check_password(encode=encode, raw_password=password):
-        return False, user_already_exist
+        return False, user_pass_not_match
     else:
         return True, user_id
 
@@ -92,7 +92,6 @@ def get_detail(table, type_id, field):
 
 def add_project(project_name, project_type, user):
     data = db.insert(PROJECTS, name=project_name, type=project_type,
-                     type_name=get_detail(XSS_CORE, project_type, 'name'),
                      owner=user, created_date=now())
     return data
 
@@ -113,8 +112,7 @@ def del_project(project_id):
 
 
 def modify_project(project_id, project_name, project_type):
-    db.update(PROJECTS, where="id=%d" % int(project_id), name=project_name, type=project_type,
-              type_name=get_detail(XSS_CORE, project_type, 'name'))
+    db.update(PROJECTS, where="id=%d" % int(project_id), name=project_name, type=project_type)
 
 
 def del_module(module_id):
@@ -140,3 +138,25 @@ def is_owner(user_id, obj_id, obj_type):
 def get_xss_result(project_id):
     data = db.select(PROJECT_RESULTS, where="project_id=%d" % int(project_id))
     return data
+
+
+def clean_xss_result(project_id):
+    db.delete(PROJECT_RESULTS, where="project_id=%d" % int(project_id))
+
+
+def del_a_result(result_id):
+    db.delete(PROJECT_RESULTS, where="id=%d" % int(result_id))
+
+
+def get_module_detail(module_id):
+    data = db.select(XSS_CORE, where="id=%d" % int(module_id))
+    try:
+        data = data[0]
+    except IndexError:
+        return None
+    else:
+        return data
+
+
+def modify_module(module_id, name, script):
+    db.update(XSS_CORE, where="id=%d" % int(module_id), name=name, script=script)

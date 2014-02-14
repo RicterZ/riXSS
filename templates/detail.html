@@ -1,58 +1,38 @@
 {% extends "base.html" %}
 
 {% block style %}
-<style>
-    .main-title {
-        padding-bottom: 20px;
-        margin-bottom: 30px;
-        border-bottom: 1px solid #CCC;
-    }
-
-    .background-white {
-        background: #FFF;
-    }
-
-    tr.result > .center {
-        vertical-align: middle;
-        display: inline-block;
-    }
-
-    .time {
-        width: 150px;
-    }
-
-    .server-data {
-        width: 200px;
-    }
-
-    .cookies {
-        width: 610px;
-    }
-
-    .result > td, .result > th{
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
-    }
-
-    .result-container {
-        width: 1140px
-    }
-
-    .view {
-        width: 55px;
-    }
-
-    .id {
-        width: 35px;
-    }
-
-</style>
+<link href="/static/css/detail.css" rel="stylesheet">
 {% endblock %}
 
 
 {% block body %}
-<h1 class="main-title">Project Result</h1>
+
+<!-- Modal -->
+<div class="modal fade" id="projectResult" tabindex="-1" role="dialog" aria-labelledby="projectResult" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">View Detail</h4>
+      </div>
+      <div class="modal-body">
+        <h3>Server Data</h3>
+        <div class="result-server-data"></div>
+        <h3>Custom Data</h3>
+        <div class="result-cookie"></div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
+
+<h1 class="main-title">The Result of Project {{ project_id }}</h1>
+<div class="operate">
+    <a href="##" onclick="makeSure()">Clean All</a>
+    <a href="/users">Personal Center</a>
+</div>
 <div class="result-container">
     <table class="table table-striped">
         <thead>
@@ -61,7 +41,7 @@
                 <th class="center id">ID</th>
                 <th class="center time">Got Time</th>
                 <th class="center server-data">Server Data</th>
-                <th class="center cookies">Cookies</th>
+                <th class="center cookies">Custom Data</th>
                 <th class="center">View</th>
                 <th class="center">Delete</th>
             </tr>
@@ -74,20 +54,24 @@
                 <td class="center id"><strong>{{ i }}</strong></td>
                 <td class="time center">{{ result.got_time }}</td>
                 <td class="server-data center">
-                    <strong>IP Address: </strong>{{ result.server_data['Request-IP'] }}
-                    <strong>User-Agent: </strong>{{ result.server_data['User-Agent'] }}
+                    <span class="line"><strong>IP Address: </strong>{{ result.server_data['Request-IP'] }}</span>
+                    <span class="line"><strong>User-Agent: </strong>{{ result.server_data['User-Agent'] }}</span>
                 </td>
                 <td class="center cookies">
                     {% for i in result.raw_data.keys() %}
-                        <strong>{{ i }}: </strong>{{ result.raw_data[i] }}
+                        <span class="line"><strong>{{ i }}: </strong>{{ result.raw_data[i] }}</span>
                     {% endfor %}
                 </td>
                 <td class="center view"><a href="##">View</a></td>
-                <td class="center"><a href="/projects/{{ project_id }}/delete/{{ result.id  }}">Delete</a></td>
+                <td class="center"><a href="/projects/{{ project_id }}/results/{{ result.id  }}/delete">Delete</a></td>
             </tr>
             {% set i = i + 1 %}
             {% endfor %}
         </tbody>
     </table>
 </div>
+{% endblock %}
+
+{% block script %}
+<script src="/static/js/detail.js"></script>
 {% endblock %}

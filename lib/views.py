@@ -2,9 +2,10 @@ import json
 from lib.settings import *
 from lib.models import *
 from lib.language.en import *
-from lib.authentication import authentication
+from lib.authentication import authentication, has_obj_permission
 from lib.valid import RegValidChecker, AddModuleValidChecker
 from lib.utils import now, format_xss_result
+from web.webapi import HTTPError
 
 
 class BaseHandler(object):
@@ -17,23 +18,36 @@ class IndexHandler(BaseHandler):
         return 'Hello world'
 
 
-class UserHandler(BaseHandler):
+class RedirectHandler(BaseHandler):
     def GET(self):
-        @authentication
+        user_id = web.cookies().get('user_id')
+        if not user_id:
+            web.seeother('/login')
+        else:
+            web.seeother('/users/%d' % int(user_id))
+
+
+class UserHandler(BaseHandler):
+    def GET(self, user_id):
+        @authentication(uid=user_id)
         def func():
-            user_id = web.cookies().get('user_id')
-            if not user_id:
-                return web.seeother('/login')
+            projects = get_user_projects(user_id)
+            projects = [{
+                "id": i.id,
+                "name": i.name,
+                "type": i.type,
+                "type_name": get_detail(XSS_CORE, i.type, 'name'),
+                "created_date": i.created_date
+            } for i in projects]
             return self.render(TYPE=0, title=personal_center, template="user.html",
                                modules=get_all_module(user_id=user_id),
-                               projects=get_user_projects(user_id),
+                               projects=projects, user_id=user_id,
                                EMAIL=get_detail(USERS, user_id, 'username'))
         return func()
 
-    def POST(self):
-        @authentication
+    def POST(self, user_id):
+        @authentication(uid=user_id)
         def func():
-            user_id = web.cookies().get('user_id')
             web_input = web.input(name='', type=1)
             if web_input.name and user_id:
                 add_project(project_name=web_input.name, project_type=web_input.type, user=user_id)
@@ -78,14 +92,32 @@ class XSSHandler(BaseHandler):
 
 class XSSResultHandler(BaseHandler):
     def GET(self, project_id):
-        @authentication
+        @authentication()
+        @has_obj_permission(obj=PROJECTS, obj_id=project_id)
         def func():
-            user_id = web.cookies().get('user_id')
-            if not user_id or not is_owner(user_id=user_id, obj_id=project_id, obj_type=PROJECTS):
-                return web.seeother('/user')
             results = format_xss_result(get_xss_result(project_id=project_id))
-            return self.render(title="Project %d Result" % int(project_id), project_id=project_id,
+            return self.render(title="Project %d" % int(project_id), project_id=project_id,
                                template="detail.html", results=results)
+        return func()
+
+
+class XSSResultCleanHandler(BaseHandler):
+    def GET(self, project_id):
+        @authentication()
+        @has_obj_permission(obj=PROJECTS, obj_id=project_id, url="/user")
+        def func():
+            clean_xss_result(project_id)
+            return web.seeother('/projects/%d/results' % int(project_id))
+        return func()
+
+
+class XSSResultDelHandler(BaseHandler):
+    def GET(self, project_id, result_id):
+        @authentication()
+        @has_obj_permission(obj=PROJECTS, obj_id=project_id, url='/user')
+        def func():
+            del_a_result(result_id)
+            return web.seeother('/projects/%d/results' % int(project_id))
         return func()
 
 
@@ -123,27 +155,25 @@ class LoginHandler(BaseHandler):
 
 class LogoutHandler(BaseHandler):
     def GET(self):
-        pass
+        web.setcookie('user_id', '')
+        web.setcookie('token', '')
+        return web.seeother('/login')
 
 
 class ProjectHandler(BaseHandler):
     def GET(self, project_id):
-        @authentication
+        @authentication()
+        @has_obj_permission(obj=PROJECTS, obj_id=project_id)
         def func():
-            user_id = web.cookies().get('user_id')
-            if not user_id or not is_owner(user_id=user_id, obj_id=project_id, obj_type=PROJECTS):
-                return web.seeother('/login')
             del_project(project_id)
             return web.seeother('/users')
         return func()
 
     def PUT(self, project_id):
-        @authentication
+        @authentication()
+        @has_obj_permission(obj=PROJECTS, obj_id=project_id)
         def func():
-            user_id = web.cookies().get('user_id')
             web_input = web.input(name='', type='')
-            if not user_id or not is_owner(user_id=user_id, obj_id=project_id, obj_type=PROJECTS):
-                return web.seeother('/login')
             modify_project(project_id, web_input.name, web_input.type)
             return {}
         return func()
@@ -151,20 +181,17 @@ class ProjectHandler(BaseHandler):
 
 class DelModuleHandler(BaseHandler):
     def GET(self, module_id):
-        @authentication
+        @authentication()
+        @has_obj_permission(obj=XSS_CORE, obj_id=module_id, url='/modules')
         def func():
-            user_id = web.cookies().get('user_id')
-            if not user_id or not is_owner(user_id=user_id, obj_id=module_id,
-                                           obj_type=XSS_CORE):
-                return web.seeother('/modules')
             del_module(module_id)
             return web.seeother('/modules')
         return func()
 
 
-class ModuleHandler(BaseHandler):
+class ModulesHandler(BaseHandler):
     def GET(self):
-        @authentication
+        @authentication()
         def func():
             user_id = web.cookies().get('user_id')
             return self.render(TYPE=1, EMAIL=get_detail(USERS, user_id, 'username'),
@@ -173,7 +200,7 @@ class ModuleHandler(BaseHandler):
         return func()
 
     def POST(self):
-        @authentication
+        @authentication()
         def func():
             user_id = web.cookies().get('user_id')
             web_input = web.input(name='', script='')
@@ -182,4 +209,30 @@ class ModuleHandler(BaseHandler):
                 return web.seeother('/modules')
             add_module(name=web_input.name, script=web_input.script, owner=user_id)
             return web.seeother('/modules')
+        return func()
+
+
+class ModuleHandler(BaseHandler):
+    def GET(self, module_id):
+        @authentication()
+        @has_obj_permission(XSS_CORE, obj_id=module_id, exception=True)
+        def func():
+            module = get_module_detail(module_id)
+            return json.dumps({
+                'name': module.name,
+                'script': module.script
+            })
+        return func()
+
+    def PUT(self, module_id):
+        @authentication()
+        @has_obj_permission(XSS_CORE, obj_id=module_id)
+        def func():
+            web_input = web.input(name='', script='')
+            valid = AddModuleValidChecker(web_input)
+            if not valid.is_valid:
+                raise HTTPError(403, data=json.dumps({'error': valid.error}),
+                                headers={'Content-type': 'application/json'})
+            modify_module(module_id, web_input.name, web_input.script)
+            return json.dumps({'message': 'successful'})
         return func()

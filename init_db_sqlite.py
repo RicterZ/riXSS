@@ -34,7 +34,6 @@ db.execute("""
         id integer not null primary key autoincrement,
         name char(50) not null,
         type integer not null,
-        type_name char(50) not null,
         owner integer not null,
         created_date char(50) not null
     )
@@ -64,8 +63,8 @@ db.execute("""
 
 db.execute('insert into xss_core(name, script) values (?, ?)', ('Get Cookies', get_cookie))
 
-db.execute('insert into projects(name, type, owner, created_date, type_name) values (?, ?, ?, ?, ?)',
-           ('test', 1, 1, now(), 'Get Cookies'))
+db.execute('insert into projects(name, type, owner, created_date) values (?, ?, ?, ?)',
+           ('test', 1, 1, now()))
 
 db.commit()
 db.close()
