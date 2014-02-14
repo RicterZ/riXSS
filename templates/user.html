@@ -24,7 +24,7 @@
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h4 class="modal-title">Add a Project</h4>
       </div>
-      <form method="POST" action="/users">
+      <form method="POST" action="/users/{{ user_id }}">
       <div class="modal-body">
         <label>Project Name:</label><input name="name" class="form-control" type="text" placeholder="Project Name" required />
         <label>Project Type:</label>
